@@ -1,10 +1,12 @@
 //
-//  ViewController.swift
+//  storyboardViewController.swift
 //  PlantML
 //
-//  Created by Pritesh Nadiadhara on 10/12/19.
-//  Copyright © 2019 PriteshN. All rights reserved.
+//  Created by Pritesh Nadiadhara on 10/5/20.
+//  Copyright © 2020 PriteshN. All rights reserved.
 //
+
+// this version of VC only to check against progamatic UI issues
 
 import UIKit
 import CoreML
@@ -13,7 +15,12 @@ import Alamofire
 import SwiftyJSON
 import SDWebImage
 
-class ViewController: UIViewController {
+class SBViewController: UIViewController {
+    
+    @IBOutlet weak var imageView : UIImageView!
+    @IBOutlet weak var descriptionLabel: UITextView!
+  
+   
     
     let wikipediaURl = "https://en.wikipedia.org/w/api.php"
     private let imagePicker = UIImagePickerController()
@@ -23,29 +30,28 @@ class ViewController: UIViewController {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.distribution = .fillEqually
-        
         sv.spacing = 20
         return sv
     }()
     
-    
-    private let imageView : UIImageView = {
-        let iv = UIImageView()
-        iv.clipsToBounds = true
-        iv.contentMode = .scaleAspectFit
-        iv.image = UIImage(systemName: "camera")
-        return iv
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.clipsToBounds = true
+        scrollView.isScrollEnabled = true
+        return scrollView
     }()
     
-    private let descriptionTextView : UITextView = {
-        let tv = UITextView()
-        tv.clipsToBounds = true
-        tv.isEditable = false
-        tv.font = .systemFont(ofSize: 21)
-        tv.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-        
-        return tv
+    
+    
+    private let descriptionLabelScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.clipsToBounds = true
+        scrollView.isScrollEnabled = true
+        return scrollView
     }()
+    
+    
+    
     
     
     
@@ -59,12 +65,7 @@ class ViewController: UIViewController {
                                                             action: #selector (didTapCameraButton))
 
         view.backgroundColor = .gray
-    
-        // edgesFor stop view from going underneath nav bar
-        edgesForExtendedLayout = []
-        setUpStackView()
-        
-    
+
         imagePicker.delegate = self
         imagePicker.allowsEditing = true
         imagePicker.sourceType = .camera
@@ -73,17 +74,9 @@ class ViewController: UIViewController {
         
     }
     
-    func setUpStackView() {
-        let stackView = UIStackView(arrangedSubviews: [imageView, descriptionTextView])
-        stackView.frame = view.frame
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.spacing = 20
-        view.addSubview(stackView)
-        
-    }
     
     
+
     
     //MARK: - Functions
     
@@ -93,6 +86,14 @@ class ViewController: UIViewController {
         
     }
 
+    
+    func setUpStackView(){
+        stackView.translatesAutoresizingMaskIntoConstraints                                                          = false
+        stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 8).isActive         = true
+        stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8).isActive    = true
+        stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8).isActive     = true
+    }
     
     func detectImage(image: CIImage){
         // flower classifiers comes from auto generated .mlmodel
@@ -153,8 +154,8 @@ class ViewController: UIViewController {
                 print(flowerImageURL)
                 self.imageView.sd_setImage(with: URL(string: flowerImageURL))
                 
-                self.descriptionTextView.text = flowerDescription
-                self.descriptionTextView.adjustsFontForContentSizeCategory = true
+                self.descriptionLabel.text = flowerDescription
+                self.descriptionLabel.adjustsFontForContentSizeCategory = true
                 
                 
                 
@@ -169,13 +170,17 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController : UIImagePickerControllerDelegate {
+extension SBViewController : UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let userPickedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage{
-            guard let ciImage = CIImage(image: userPickedImage) else {
-                fatalError("Cannot convert to CI Image")
+            DispatchQueue.main.async {
+                guard let ciImage = CIImage(image: userPickedImage) else {
+                    fatalError("Cannot convert to CI Image")
+                }
+                self.detectImage(image: ciImage)
             }
-            detectImage(image: ciImage)
+            
+            
             
         }
         
@@ -183,6 +188,6 @@ extension ViewController : UIImagePickerControllerDelegate {
     }
 }
 
-extension ViewController: UINavigationControllerDelegate {
+extension SBViewController: UINavigationControllerDelegate {
     
 }
