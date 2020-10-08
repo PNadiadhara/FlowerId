@@ -28,7 +28,8 @@ Dillinger uses a number of open source projects to work properly:
 
 
 
-
+### Additional 
+Pre-Trained Machine Learning Model found here : https://github.com/jimgoo/caffe-oxford102
 
 
 License
