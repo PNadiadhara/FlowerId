@@ -2,7 +2,7 @@
 
 
 
-An iOS app that uses a pre-trained machine learning model to identify a flower based on a users image.
+An iOS app that uses a pre-trained machine learning model to identify a flower based on a users image and returns information from the Wikipedia API.
 
 ![](FlowerID.gif)
 
