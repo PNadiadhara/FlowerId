@@ -18,7 +18,7 @@ An iOS app that uses a pre-trained machine learning model to identify a flower b
 
 ### CocoaPods
 
-Dillinger uses a number of open source projects to work properly:
+
 
 | Pod | Link |
 | ------ | ------ |
